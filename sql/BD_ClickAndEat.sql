@@ -1,11 +1,9 @@
 # Click And Eat
 
 # Base de Datos
-
 # Equipo 1
-
+#DROP DATABASE CLICKANDEAT;
 CREATE DATABASE clickandeat;
-
 USE clickandeat;
 SHOW TABLES;
 
@@ -16,7 +14,6 @@ SHOW TABLES;
 -- -----------------------------------------------------
 -- Table `tbl_rol`
 -- -----------------------------------------------------
-
 CREATE TABLE tbl_rol (
 	id INT PRIMARY KEY AUTO_INCREMENT,
 	tipo ENUM('ADMINISTRADOR','CLIENTE') NOT NULL UNIQUE
@@ -31,8 +28,8 @@ CREATE TABLE tbl_usuario(
     nombre VARCHAR(255) NOT NULL,
     telefono VARCHAR(15) NOT NULL,
     contrasena VARCHAR(255) NOT NULL,
-    idRol INT NOT NULL,
-    FOREIGN KEY (idRol) REFERENCES tbl_rol(id)
+    id_rol INT NOT NULL,
+    FOREIGN KEY (id_rol) REFERENCES tbl_rol(id)
 );
 
 -- -----------------------------------------------------
@@ -45,23 +42,23 @@ CREATE TABLE tbl_comentario(
     contenido VARCHAR (2000) NOT NULL,
     calificacion INT CHECK (calificacion >= 1 AND calificacion <= 5) NOT NULL,
     categoria ENUM('COMIDA', 'SERVICIO', 'AMBIENTE', 'TIEMPO_ESPERA', 'GENERAL'),
-    fechaComentario TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    idCliente INT,
-    FOREIGN KEY (idCliente) REFERENCES tbl_usuario(id)
+    fecha_comentario TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    id_cliente INT,
+    FOREIGN KEY (id_cliente) REFERENCES tbl_usuario(id)
 );
 
 -- -----------------------------------------------------
 -- Table `tbl_respuestaComentario`
 -- -----------------------------------------------------
 
-CREATE TABLE tbl_respuestaComentario (
+CREATE TABLE tbl_respuesta_comentario (
 	id INT PRIMARY KEY AUTO_INCREMENT,
     contenido VARCHAR (2000) NOT NULL,
-    fechaRespuesta TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    idComentario INT NOT NULL,
-    idAdministrador INT NOT NULL,
-    FOREIGN KEY (idComentario) REFERENCES tbl_comentario(id) ON DELETE CASCADE,
-    FOREIGN KEY (idAdministrador) REFERENCES tbl_usuario(id)
+    fecha_respuesta TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    id_comentario INT NOT NULL,
+    id_administrador INT NOT NULL,
+    FOREIGN KEY (id_comentario) REFERENCES tbl_comentario(id) ON DELETE CASCADE,
+    FOREIGN KEY (id_administrador) REFERENCES tbl_usuario(id)
 );
 
 -- -----------------------------------------------------
@@ -72,17 +69,17 @@ CREATE TABLE tbl_ingrediente (
 	id INT PRIMARY KEY AUTO_INCREMENT,
     nombre VARCHAR(100) NOT NULL,
     descripcion VARCHAR(200) NOT NULL, 
-    cantidadPorcion DOUBLE NOT NULL,
-    unidadMedida ENUM('GRAMOS', 'LITROS', 'MILILITROS', 'UNIDADES', 'KILOGRAMOS') NOT NULL,
-    stockActual DOUBLE NOT NULL,
-    precioUnitario DOUBLE NOT NULL
+    cantidad_porcion DOUBLE NOT NULL,
+    unidad_medida ENUM('GRAMOS', 'LITROS', 'MILILITROS', 'UNIDADES', 'KILOGRAMOS') NOT NULL,
+    stock_actual DOUBLE NOT NULL,
+    precio_unitario DOUBLE NOT NULL
 );
 
 -- -----------------------------------------------------
 -- Table `tbl_categoriaProducto`
 -- -----------------------------------------------------
 
-CREATE TABLE tbl_categoriaProducto(
+CREATE TABLE tbl_categoria_producto(
 	id INT PRIMARY KEY AUTO_INCREMENT,
     nombre VARCHAR(50) NOT NULL
 );
@@ -97,8 +94,8 @@ CREATE TABLE tbl_producto(
     descripcion VARCHAR(300) NOT NULL,
     precio DOUBLE NOT NULL,
     disponible BOOLEAN DEFAULT TRUE,
-    idCategoria INT,
-    FOREIGN KEY (idCategoria) REFERENCES tbl_categoriaProducto(id)
+    id_categoria INT,
+    FOREIGN KEY (id_categoria) REFERENCES tbl_categoria_producto(id)
 );
 
 
@@ -108,13 +105,13 @@ CREATE TABLE tbl_producto(
 
 CREATE TABLE tbl_pedido (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    numeroTicket VARCHAR(20) UNIQUE NOT NULL,
+    numero_ticket VARCHAR(20) UNIQUE NOT NULL,
     estado ENUM('PENDIENTE', 'EN_PROCESO', 'TERMINADO', 'PAGADO', 'CANCELADO') DEFAULT 'PENDIENTE',
     total DOUBLE NOT NULL,
-    fechaPedido TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    fecha_pedido TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     observaciones VARCHAR(500),
-    idCliente INT,
-    FOREIGN KEY (idCliente) REFERENCES tbl_usuario(id)
+    id_cliente INT,
+    FOREIGN KEY (id_cliente) REFERENCES tbl_usuario(id)
 );
 
 -- -----------------------------------------------------
@@ -124,9 +121,9 @@ CREATE TABLE tbl_promocion (
     id INT PRIMARY KEY AUTO_INCREMENT,
     nombre VARCHAR(100) NOT NULL,
     descripcion VARCHAR(300),
-	fechaInicio DATE NOT NULL,
-    fechaFin DATE NOT NULL,
-    precioTotalConDescuento DOUBLE NOT NULL,
+	fecha_inicio DATE NOT NULL,
+    fecha_fin DATE NOT NULL,
+    precio_total_con_descuento DOUBLE NOT NULL,
     activo BOOLEAN DEFAULT TRUE
 );
 
@@ -136,12 +133,12 @@ CREATE TABLE tbl_promocion (
 
 CREATE TABLE tbl_promocionProducto(
     id INT PRIMARY KEY AUTO_INCREMENT,
-    idProducto INT NOT NULL,
-    idPromocion INT NOT NULL,
-    cantidadProducto DOUBLE NOT NULL,
-    UNIQUE KEY productoPromocion (idProducto, idPromocion),
-    FOREIGN KEY (idPromocion) REFERENCES tbl_promocion(id),
-    FOREIGN KEY (idProducto) REFERENCES tbl_producto(id)
+    id_producto INT NOT NULL,
+    id_promocion INT NOT NULL,
+    cantidad_producto DOUBLE NOT NULL,
+    UNIQUE KEY producto_promocion (id_producto, id_promocion),
+    FOREIGN KEY (id_promocion) REFERENCES tbl_promocion(id),
+    FOREIGN KEY (id_producto) REFERENCES tbl_producto(id)
 );
 
 -----------------------------------------------------
@@ -150,16 +147,15 @@ CREATE TABLE tbl_promocionProducto(
 
 CREATE TABLE tbl_detallePedido (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    tipoItem ENUM('PRODUCTO', 'PROMOCION') NOT NULL,
+    tipo_item ENUM('PRODUCTO', 'PROMOCION') NOT NULL,
     cantidad INT NOT NULL DEFAULT 1,
-    precioUnitario DOUBLE NOT NULL,
+    precio_unitario DOUBLE NOT NULL,
     subtotal DOUBLE NOT NULL,
-    idProducto INT NULL,
-    idPromocion INT NULL,
-    idPedido INT NOT NULL,
-    FOREIGN KEY (idPedido) REFERENCES tbl_pedido(id),
-    FOREIGN KEY (idProducto) REFERENCES tbl_producto(id),
-    FOREIGN KEY (idPromocion) REFERENCES tbl_promocion(id)
+    id_producto INT NULL,
+    id_promocion INT NULL,
+    id_pedido INT NOT NULL,
+    FOREIGN KEY (id_pedido) REFERENCES tbl_pedido(id),
+    FOREIGN KEY (id_producto) REFERENCES tbl_producto(id),
+    FOREIGN KEY (id_promocion) REFERENCES tbl_promocion(id)
 );
-
 

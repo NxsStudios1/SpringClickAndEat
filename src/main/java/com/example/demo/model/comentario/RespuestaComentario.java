@@ -29,4 +29,11 @@ public class RespuestaComentario extends Entidad {
     @ManyToOne
     @JoinColumn(name = "idAdministrador", nullable = false)
     private Usuario administrador;
+
+    @PrePersist
+    public void prePersist(){
+        if(fechaRespuesta == null){
+            fechaRespuesta = LocalDateTime.now();
+        }
+    }
 }

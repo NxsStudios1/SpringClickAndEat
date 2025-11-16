@@ -6,25 +6,20 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 @Builder
-public class ComentarioDto {
+public class RespuestaComentarioDto {
 
     private int id;
-    private String asunto;
     private String contenido;
-    private int calificacion;
-    private int categoria;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @JsonFormat(shape = JsonFormat.Shape.STRING,
             pattern = "dd/MM/yyyy HH:mm",
             timezone = "America/Mexico_City")
-    private LocalDateTime fechaComentario;
+    private LocalDateTime fechaRespuesta;
 
-    private int idCliente;
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private List<RespuestaComentarioDto> respuestas;
+    private int idComentario;
+    private int idAdministrador;
 }

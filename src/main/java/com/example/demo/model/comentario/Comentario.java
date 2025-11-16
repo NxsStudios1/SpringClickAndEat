@@ -38,9 +38,9 @@ public class Comentario extends Entidad {
     @JoinColumn(name = "idCliente", nullable = false)
     private Usuario cliente;
 
-    /*@OneToMany(mappedBy = "comentario", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "comentario", cascade = CascadeType.ALL)
     private List<RespuestaComentario> respuestas;
-*/
+
     public Usuario getUsuario(){
         return cliente;
     }

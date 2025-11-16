@@ -131,7 +131,7 @@ CREATE TABLE tbl_promocion (
 -- Table `tbl_productoPromocion`
 -- -----------------------------------------------------
 
-CREATE TABLE tbl_promocionProducto(
+CREATE TABLE tbl_promocion_producto(
     id INT PRIMARY KEY AUTO_INCREMENT,
     id_producto INT NOT NULL,
     id_promocion INT NOT NULL,
@@ -145,7 +145,7 @@ CREATE TABLE tbl_promocionProducto(
 -- Table tbl_detallePedido`
 -- --------------------------------------------------
 
-CREATE TABLE tbl_detallePedido (
+CREATE TABLE tbl_detalle_pedido (
     id INT PRIMARY KEY AUTO_INCREMENT,
     tipo_item ENUM('PRODUCTO', 'PROMOCION') NOT NULL,
     cantidad INT NOT NULL DEFAULT 1,

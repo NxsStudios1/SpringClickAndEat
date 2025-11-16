@@ -2,9 +2,10 @@ package com.example.demo.repository;
 
 import com.example.demo.model.sesion.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
-@Repository
-public interface UsuarioRepository extends JpaRepository<Usuario, Integer>
-{
+import java.util.Optional;
+
+public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
+
+    Optional<Usuario> findByTelefono(String telefono);
 }

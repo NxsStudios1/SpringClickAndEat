@@ -3,10 +3,16 @@ package com.example.demo.controler;
 import com.example.demo.dto.UsuarioDto;
 import com.example.demo.model.sesion.Usuario;
 import com.example.demo.model.sesion.Rol;
+import com.example.demo.repository.RolRepository;
+import com.example.demo.repository.UsuarioRepository;
 import com.example.demo.service.UsuarioService;
 import com.example.demo.service.RolService;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,10 +21,14 @@ import java.util.stream.Collectors;
 @RequestMapping("/Gerdoc/api")
 @RestController
 @AllArgsConstructor
-public class UsuarioController {
+@Component
+@Order(2)
+public class UsuarioController implements CommandLineRunner {
 
     private final UsuarioService usuarioService;
+    private final UsuarioRepository usuarioRepository;
     private final RolService rolService; // Para mapear el int rol a Rol entidad
+    private final RolRepository rolRepository;
 
     // Obtener todos los usuarios
     @GetMapping("/usuario")
@@ -107,5 +117,32 @@ public class UsuarioController {
                 .build();
 
         return ResponseEntity.ok(dto);
+    }
+
+    @Override
+    public void run(String... args) {
+
+        String telefonoAndrea = "5576866360";
+
+        boolean yaExiste = usuarioRepository
+                .findByTelefono(telefonoAndrea)
+                .isPresent();
+
+        if (yaExiste) {
+            return;
+        }
+
+        Rol rolAdmin = rolRepository.findById(1)
+                .orElseThrow(() -> new RuntimeException("No existe el rol ADMIN con id = 1"));
+
+        Usuario andrea = Usuario.builder()
+                .nombre("Andrea")
+                .telefono(telefonoAndrea)
+                .contrasena("AndyLover")
+                .rol(rolAdmin)
+                .build();
+
+        usuarioRepository.save(andrea);
+        System.out.println(">>> Usuario administrador Andrea creado por primera vez.");
     }
 }

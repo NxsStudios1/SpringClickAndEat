@@ -6,8 +6,11 @@ import com.example.demo.model.sesion.RolEnum;
 import com.example.demo.repository.RolRepository;
 import com.example.demo.service.RolService;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,6 +19,8 @@ import java.util.stream.Collectors;
 @RequestMapping("/Gerdoc/api")
 @RestController
 @AllArgsConstructor
+@Component
+@Order(1)
 public class RolController implements CommandLineRunner {
     private final RolService rolService;
     private final RolRepository rolRepository;

@@ -1,7 +1,7 @@
 # Click And Eat
 
 # Base de Datos
-# Equipo 1
+# Equipo 9	
 #DROP DATABASE CLICKANDEAT;
 CREATE DATABASE clickandeat;
 USE clickandeat;
@@ -75,6 +75,7 @@ CREATE TABLE tbl_ingrediente (
     precio_unitario DOUBLE NOT NULL
 );
 
+
 -- -----------------------------------------------------
 -- Table `tbl_categoriaProducto`
 -- -----------------------------------------------------
@@ -98,6 +99,18 @@ CREATE TABLE tbl_producto(
     FOREIGN KEY (id_categoria) REFERENCES tbl_categoria_producto(id)
 );
 
+-- -----------------------------------------------------
+-- Table `tbl_producto_ingrediente`
+-- -----------------------------------------------------
+CREATE TABLE tbl_producto_ingrediente (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    id_producto INT NOT NULL,
+    id_ingrediente INT NOT NULL,
+    cantidad_ingrediente DOUBLE NOT NULL,
+	UNIQUE KEY producto_ingrediente (id_producto, id_ingrediente),
+    FOREIGN KEY (id_producto) REFERENCES tbl_producto(id),
+    FOREIGN KEY (id_ingrediente) REFERENCES tbl_ingrediente(id)
+);
 
 -- -----------------------------------------------------
 -- Table `tbl_pedido`

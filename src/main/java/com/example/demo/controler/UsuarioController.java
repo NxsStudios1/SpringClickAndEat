@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Component
 @Order(2)
+
 public class UsuarioController implements CommandLineRunner {
 
     private final UsuarioService usuarioService;

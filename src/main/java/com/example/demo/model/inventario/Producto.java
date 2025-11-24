@@ -12,7 +12,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = "promociones")
+@ToString(exclude = {"promociones", "ingredientes"})
 @Entity
 @Table(name = "tbl_producto")
 public class Producto extends Entidad {
@@ -30,10 +30,12 @@ public class Producto extends Entidad {
     private Boolean disponible = true;
 
     @ManyToOne
-    @JoinColumn(name = "idCategoria")
+    @JoinColumn(name = "id_categoria")
     private CategoriaProducto categoria;
 
     @OneToMany(mappedBy = "producto")
     private List<PromocionProducto> promociones;
 
+    @OneToMany(mappedBy = "producto")
+    private List<ProductoIngrediente> ingredientes;
 }

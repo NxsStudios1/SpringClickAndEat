@@ -22,8 +22,8 @@ public class CategoriaProducto extends Entidad {
     @Column(nullable = false, length = 50)
     private String nombre;
 
-    //@OneToMany(mappedBy = "categoria")
-    //private List<Producto> productos;
+    @OneToMany(mappedBy = "categoria")
+    private List<Producto> productos;
 
     @Override
     public String toString() {

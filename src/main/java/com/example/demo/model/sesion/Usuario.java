@@ -2,6 +2,8 @@ package com.example.demo.model.sesion;
 
 import com.example.demo.model.base.Entidad;
 import com.example.demo.model.comentario.Comentario;
+import com.example.demo.model.comentario.RespuestaComentario;
+import com.example.demo.model.pedido.Pedido;
 import jakarta.persistence.*;
 
 import lombok.*;
@@ -33,12 +35,12 @@ public class Usuario extends Entidad {
 
     @OneToMany(mappedBy = "cliente")
     private List<Comentario> comentarios;
-/*
+
     @OneToMany(mappedBy = "administrador")
     private List<RespuestaComentario> respuestas;
 
     @OneToMany(mappedBy = "cliente")
-    private List<Pedido> pedidos;*/
+    private List<Pedido> pedidos;
 
     @Override
     public String toString() {

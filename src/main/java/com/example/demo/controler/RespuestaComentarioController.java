@@ -26,24 +26,41 @@ public class RespuestaComentarioController {
     // GET: todas las respuestas
     @GetMapping("/respuestaComentario")
     public ResponseEntity<List<RespuestaComentarioDto>> lista() {
-        List<RespuestaComentario> respuestas = respuestaComentarioService.getAll();
-        if (respuestas == null || respuestas.isEmpty()) {
+        List<RespuestaComentario> entidades = respuestaComentarioService.getAll();
+        if (entidades == null || entidades.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
-        List<RespuestaComentarioDto> dtos = respuestas.stream()
-                .map(respuesta -> RespuestaComentarioDto.builder()
-                        .id(respuesta.getId() != null ? respuesta.getId() : 0)
-                        .contenido(respuesta.getContenido())
-                        .fechaRespuesta(respuesta.getFechaRespuesta())
-                        .idComentario(respuesta.getComentario() != null && respuesta.getComentario().getId() != null ? respuesta.getComentario().getId() : 0)
-                        .idAdministrador(respuesta.getAdministrador() != null && respuesta.getAdministrador().getId() != null ? respuesta.getAdministrador().getId() : 0)
-                        .build()
-                )
+        List<RespuestaComentarioDto> dtos = entidades.stream()
+                .map(this::mapRespuestaToDto)
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(dtos);
     }
+
+    private RespuestaComentarioDto mapRespuestaToDto(RespuestaComentario r) {
+        return RespuestaComentarioDto.builder()
+                .id(r.getId() != null ? r.getId() : 0)
+                .contenido(r.getContenido())
+                .fechaRespuesta(r.getFechaRespuesta())
+                .idComentario(
+                        r.getComentario() != null && r.getComentario().getId() != null
+                                ? r.getComentario().getId()
+                                : 0
+                )
+                .idAdministrador(
+                        r.getAdministrador() != null && r.getAdministrador().getId() != null
+                                ? r.getAdministrador().getId()
+                                : 0
+                )
+                .nombreAdministrador(
+                        r.getAdministrador() != null
+                                ? r.getAdministrador().getNombre()
+                                : null
+                )
+                .build();
+    }
+
 
     // GET: respuesta por id
     @GetMapping("/respuestaComentario/{id}")

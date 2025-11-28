@@ -41,7 +41,7 @@ public class Comentario extends Entidad {
     @OneToMany(mappedBy = "comentario", cascade = CascadeType.ALL)
     private List<RespuestaComentario> respuestas;
 
-    public Usuario getUsuario(){
+    public Usuario getUsuario() {
         return cliente;
     }
 
@@ -51,5 +51,4 @@ public class Comentario extends Entidad {
             fechaComentario = LocalDateTime.now();
         }
     }
-
 }

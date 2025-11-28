@@ -1,3 +1,4 @@
+// src/main/java/com/example/demo/dto/ComentarioDto.java
 package com.example.demo.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -16,15 +17,25 @@ public class ComentarioDto {
     private String asunto;
     private String contenido;
     private int calificacion;
-    private int categoria;
+
+    // ahora como STRING (COMIDA, SERVICIO, etc.)
+    private String categoria;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    @JsonFormat(shape = JsonFormat.Shape.STRING,
+    @JsonFormat(
+            shape = JsonFormat.Shape.STRING,
             pattern = "dd/MM/yyyy HH:mm",
-            timezone = "America/Mexico_City")
+            timezone = "America/Mexico_City"
+    )
     private LocalDateTime fechaComentario;
 
     private int idCliente;
+
+    // Nombre del cliente que hizo el comentario
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private String nombreCliente;
+
+    // Respuestas del administrador embebidas
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private List<RespuestaComentarioDto> respuestas;
 }

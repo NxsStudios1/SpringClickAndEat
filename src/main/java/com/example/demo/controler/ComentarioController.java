@@ -1,3 +1,4 @@
+// src/main/java/com/example/demo/controler/ComentarioController.java
 package com.example.demo.controler;
 
 import com.example.demo.dto.ComentarioDto;
@@ -24,20 +25,22 @@ public class ComentarioController {
     private final ComentarioService comentarioService;
     private final UsuarioService usuarioService;
 
-    // GET: lista de comentarios (opcionalmente filtrando por asunto)
+    // ================== GET LISTA ==================
     @GetMapping("/comentario")
     public ResponseEntity<List<ComentarioDto>> lista(
-            @RequestParam(name = "asunto", defaultValue = "", required = false) String asunto) {
-
+            @RequestParam(name = "asunto", defaultValue = "", required = false)
+            String asunto
+    ) {
         List<Comentario> comentarios = comentarioService.getAll();
         if (comentarios == null || comentarios.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
-        // Filtrado por asunto si se envía
+        // filtrado opcional por asunto
         if (asunto != null && !asunto.isEmpty()) {
             comentarios = comentarios.stream()
-                    .filter(c -> c.getAsunto() != null && c.getAsunto().equalsIgnoreCase(asunto))
+                    .filter(c -> c.getAsunto() != null &&
+                            c.getAsunto().equalsIgnoreCase(asunto))
                     .collect(Collectors.toList());
         }
 
@@ -48,27 +51,33 @@ public class ComentarioController {
         return ResponseEntity.ok(dtos);
     }
 
-    // GET: comentario por id (con respuestas)
+    // ================== GET POR ID ==================
     @GetMapping("/comentario/{id}")
     public ResponseEntity<ComentarioDto> getById(@PathVariable int id) {
         Comentario comentario = comentarioService.getById(id);
         if (comentario == null) {
             return ResponseEntity.notFound().build();
         }
-
         ComentarioDto dto = mapComentarioToDtoConRespuestas(comentario);
         return ResponseEntity.ok(dto);
     }
 
-    // POST: crear comentario (fechaComentario se genera sola en la entidad)
+    // ================== POST ==================
     @PostMapping("/comentario")
     public ResponseEntity<ComentarioDto> save(@RequestBody ComentarioDto dtoEntrada) {
 
-        // Cliente (Usuario) que hace el comentario
-        Usuario cliente = dtoEntrada.getIdCliente() != 0 ? usuarioService.getById(dtoEntrada.getIdCliente()) : null;
+        Usuario cliente = dtoEntrada.getIdCliente() != 0
+                ? usuarioService.getById(dtoEntrada.getIdCliente())
+                : null;
 
-        // Categoría (enum) a partir del int del DTO
-        CategoriaComentarioEnum categoria = dtoEntrada.getCategoria() != 0 ? CategoriaComentarioEnum.getById(dtoEntrada.getCategoria()) : null;
+        CategoriaComentarioEnum categoria = null;
+        if (dtoEntrada.getCategoria() != null && !dtoEntrada.getCategoria().isEmpty()) {
+            try {
+                categoria = CategoriaComentarioEnum.valueOf(dtoEntrada.getCategoria());
+            } catch (IllegalArgumentException ex) {
+                // categoría inválida, se deja null o puedes manejar error
+            }
+        }
 
         Comentario comentario = Comentario.builder()
                 .asunto(dtoEntrada.getAsunto())
@@ -84,21 +93,23 @@ public class ComentarioController {
         return ResponseEntity.ok(dto);
     }
 
-    // DELETE: eliminar comentario
-    @DeleteMapping("/comentario/{id}")
-    public ResponseEntity<Void> delete(@PathVariable int id) {
-        comentarioService.delete(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    // PUT: actualizar comentario (NO cambia fechaComentario)
+    // ================== PUT ==================
     @PutMapping("/comentario/{id}")
     public ResponseEntity<ComentarioDto> update(@PathVariable int id,
                                                 @RequestBody ComentarioDto dtoEntrada) {
 
-        Usuario cliente = dtoEntrada.getIdCliente() != 0 ? usuarioService.getById(dtoEntrada.getIdCliente()) : null;
+        Usuario cliente = dtoEntrada.getIdCliente() != 0
+                ? usuarioService.getById(dtoEntrada.getIdCliente())
+                : null;
 
-        CategoriaComentarioEnum categoria = dtoEntrada.getCategoria() != 0 ? CategoriaComentarioEnum.getById(dtoEntrada.getCategoria()) : null;
+        CategoriaComentarioEnum categoria = null;
+        if (dtoEntrada.getCategoria() != null && !dtoEntrada.getCategoria().isEmpty()) {
+            try {
+                categoria = CategoriaComentarioEnum.valueOf(dtoEntrada.getCategoria());
+            } catch (IllegalArgumentException ex) {
+                // categoría inválida, deja valor anterior o maneja error
+            }
+        }
 
         Comentario cambios = Comentario.builder()
                 .asunto(dtoEntrada.getAsunto())
@@ -117,8 +128,14 @@ public class ComentarioController {
         return ResponseEntity.ok(dto);
     }
 
-    // =============== Mapeo entidad -> DTO con respuestas anidadas ===============
+    // ================== DELETE ==================
+    @DeleteMapping("/comentario/{id}")
+    public ResponseEntity<Void> delete(@PathVariable int id) {
+        comentarioService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
 
+    // ========== MAPPER ENTIDAD -> DTO CON RESPUESTAS ==========
     private ComentarioDto mapComentarioToDtoConRespuestas(Comentario comentario) {
 
         List<RespuestaComentarioDto> respuestasDto;
@@ -132,8 +149,22 @@ public class ComentarioController {
                             .id(r.getId() != null ? r.getId() : 0)
                             .contenido(r.getContenido())
                             .fechaRespuesta(r.getFechaRespuesta())
-                            .idComentario(r.getComentario() != null && r.getComentario().getId() != null ? r.getComentario().getId() : 0)
-                            .idAdministrador(r.getAdministrador() != null && r.getAdministrador().getId() != null ? r.getAdministrador().getId() : 0)
+                            .idComentario(
+                                    r.getComentario() != null && r.getComentario().getId() != null
+                                            ? r.getComentario().getId()
+                                            : 0
+                            )
+                            .idAdministrador(
+                                    r.getAdministrador() != null && r.getAdministrador().getId() != null
+                                            ? r.getAdministrador().getId()
+                                            : 0
+                            )
+                            // 👇 ESTE ES EL CAMBIO IMPORTANTE
+                            .nombreAdministrador(
+                                    r.getAdministrador() != null
+                                            ? r.getAdministrador().getNombre()
+                                            : null
+                            )
                             .build()
                     )
                     .collect(Collectors.toList());
@@ -144,10 +175,21 @@ public class ComentarioController {
                 .asunto(comentario.getAsunto())
                 .contenido(comentario.getContenido())
                 .calificacion(comentario.getCalificacion())
-                .categoria(comentario.getCategoria() != null ? comentario.getCategoria().getIdCategoria() : 0)
+                .categoria(comentario.getCategoria() != null ? comentario.getCategoria().name() : null)
                 .fechaComentario(comentario.getFechaComentario())
-                .idCliente(comentario.getCliente() != null && comentario.getCliente().getId() != null ? comentario.getCliente().getId() : 0)
+                .idCliente(
+                        comentario.getCliente() != null && comentario.getCliente().getId() != null
+                                ? comentario.getCliente().getId()
+                                : 0
+                )
+                .nombreCliente(
+                        comentario.getCliente() != null
+                                ? comentario.getCliente().getNombre()
+                                : null
+                )
                 .respuestas(respuestasDto)
                 .build();
     }
+
+
 }

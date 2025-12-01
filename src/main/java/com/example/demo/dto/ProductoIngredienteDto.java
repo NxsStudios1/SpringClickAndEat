@@ -11,4 +11,6 @@ public class ProductoIngredienteDto {
     private double cantidadIngrediente;
     private int idProducto;
     private int idIngrediente;
+    private String nombreProducto;
+    private String nombreIngrediente;
 }

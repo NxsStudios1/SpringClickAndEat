@@ -11,7 +11,7 @@ public class IngredienteDto {
     private String nombre;
     private String descripcion;
     private double cantidadPorcion;
-    private int unidadMedida;
+    private String unidadMedida;
     private double stockActual;
     private double precioUnitario;
 }

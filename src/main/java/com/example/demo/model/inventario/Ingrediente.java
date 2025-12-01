@@ -2,15 +2,13 @@ package com.example.demo.model.inventario;
 
 import com.example.demo.model.base.Entidad;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.List;
 
 @Data
 @NoArgsConstructor
+@Builder
 @AllArgsConstructor
 @ToString(exclude = "productos")
 @Entity

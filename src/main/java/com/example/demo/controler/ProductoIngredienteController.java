@@ -23,6 +23,8 @@ public class ProductoIngredienteController {
     private final ProductoService productoService;
     private final IngredienteService ingredienteService;
 
+    // =================== GET GENERALES ===================
+
     // GET: lista completa
     @GetMapping("/productoIngrediente")
     public ResponseEntity<List<ProductoIngredienteDto>> lista() {
@@ -38,7 +40,7 @@ public class ProductoIngredienteController {
         return ResponseEntity.ok(dtos);
     }
 
-    // GET: por id
+    // GET: productoIngrediente por id
     @GetMapping("/productoIngrediente/{id}")
     public ResponseEntity<ProductoIngredienteDto> getById(@PathVariable Integer id) {
         ProductoIngrediente pi = productoIngredienteService.getById(id);
@@ -48,15 +50,36 @@ public class ProductoIngredienteController {
         return ResponseEntity.ok(toDto(pi));
     }
 
-    // POST: crear
+    // NUEVO: GET por idProducto (todos los ingredientes de un producto)
+    @GetMapping("/productoIngrediente/producto/{idProducto}")
+    public ResponseEntity<List<ProductoIngredienteDto>> getByProducto(
+            @PathVariable Integer idProducto) {
+
+        List<ProductoIngrediente> lista =
+                productoIngredienteService.findByProducto(idProducto);
+
+        if (lista == null || lista.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        List<ProductoIngredienteDto> dtos = lista.stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(dtos);
+    }
+
+    // =================== POST / PUT / DELETE ===================
+
+    // POST: crear relación producto-ingrediente
     @PostMapping("/productoIngrediente")
-    public ResponseEntity<ProductoIngredienteDto> save(@RequestBody ProductoIngredienteDto dto) {
+    public ResponseEntity<ProductoIngredienteDto> save(
+            @RequestBody ProductoIngredienteDto dto) {
 
         Producto producto = productoService.getById(dto.getIdProducto());
         Ingrediente ingrediente = ingredienteService.getById(dto.getIdIngrediente());
 
         if (producto == null || ingrediente == null) {
-            // Algún id no existe en BD
             return ResponseEntity.badRequest().build();
         }
 
@@ -70,10 +93,11 @@ public class ProductoIngredienteController {
         return ResponseEntity.ok(toDto(guardado));
     }
 
-    // PUT: actualizar
+    // PUT: actualizar relación
     @PutMapping("/productoIngrediente/{id}")
-    public ResponseEntity<ProductoIngredienteDto> update(@PathVariable Integer id,
-                                                         @RequestBody ProductoIngredienteDto dto) {
+    public ResponseEntity<ProductoIngredienteDto> update(
+            @PathVariable Integer id,
+            @RequestBody ProductoIngredienteDto dto) {
 
         Producto producto = productoService.getById(dto.getIdProducto());
         Ingrediente ingrediente = ingredienteService.getById(dto.getIdIngrediente());
@@ -87,7 +111,9 @@ public class ProductoIngredienteController {
         entidad.setProducto(producto);
         entidad.setIngrediente(ingrediente);
 
-        ProductoIngrediente actualizado = productoIngredienteService.update(id, entidad);
+        ProductoIngrediente actualizado =
+                productoIngredienteService.update(id, entidad);
+
         if (actualizado == null) {
             return ResponseEntity.notFound().build();
         }
@@ -95,20 +121,39 @@ public class ProductoIngredienteController {
         return ResponseEntity.ok(toDto(actualizado));
     }
 
-    // DELETE: eliminar
+    // DELETE: eliminar relación
     @DeleteMapping("/productoIngrediente/{id}")
     public ResponseEntity<Void> delete(@PathVariable Integer id) {
         productoIngredienteService.delete(id);
         return ResponseEntity.noContent().build();
     }
 
+    // =================== MAPEADOR ENTIDAD -> DTO ===================
 
     private ProductoIngredienteDto toDto(ProductoIngrediente entidad) {
         return ProductoIngredienteDto.builder()
-                .id(entidad.getId())
-                .cantidadIngrediente(entidad.getCantidadIngrediente())
-                .idProducto(entidad.getProducto() != null ? entidad.getProducto().getId() : 0)
-                .idIngrediente(entidad.getIngrediente() != null ? entidad.getIngrediente().getId() : 0)
+                .id(entidad.getId() != null ? entidad.getId() : 0)
+                .cantidadIngrediente(
+                        entidad.getCantidadIngrediente() != null
+                                ? entidad.getCantidadIngrediente()
+                                : 0.0
+                )
+                .idProducto(
+                        entidad.getProducto() != null && entidad.getProducto().getId() != null
+                                ? entidad.getProducto().getId()
+                                : 0
+                )
+                .idIngrediente(
+                        entidad.getIngrediente() != null && entidad.getIngrediente().getId() != null
+                                ? entidad.getIngrediente().getId()
+                                : 0
+                )
+                .nombreProducto(
+                        entidad.getProducto() != null ? entidad.getProducto().getNombre() : null
+                )
+                .nombreIngrediente(
+                        entidad.getIngrediente() != null ? entidad.getIngrediente().getNombre() : null
+                )
                 .build();
     }
 }

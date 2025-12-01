@@ -36,13 +36,22 @@ public class ProductoIngredienteServiceImpl implements ProductoIngredienteServic
 
     @Override
     public ProductoIngrediente update(Integer id, ProductoIngrediente productoIngrediente) {
-        ProductoIngrediente actual = productoIngredienteRepository.findById(id).orElse(null);
+        ProductoIngrediente actual =
+                productoIngredienteRepository.findById(id).orElse(null);
+
         if (actual == null) {
             return null;
         }
+
         actual.setCantidadIngrediente(productoIngrediente.getCantidadIngrediente());
         actual.setProducto(productoIngrediente.getProducto());
         actual.setIngrediente(productoIngrediente.getIngrediente());
+
         return productoIngredienteRepository.save(actual);
+    }
+
+    @Override
+    public List<ProductoIngrediente> findByProducto(Integer idProducto) {
+        return productoIngredienteRepository.findByProducto_Id(idProducto);
     }
 }

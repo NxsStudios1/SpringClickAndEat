@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "tbl_producto_ingrediente")
 public class ProductoIngrediente extends Entidad {
 
-    @Column(nullable = false)
+    @Column(name = "cantidad_ingrediente", nullable = false)
     private Double cantidadIngrediente;
 
     @ManyToOne

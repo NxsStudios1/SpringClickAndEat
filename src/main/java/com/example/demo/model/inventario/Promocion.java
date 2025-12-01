@@ -1,10 +1,7 @@
 package com.example.demo.model.inventario;
 
 import com.example.demo.model.base.Entidad;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -39,7 +36,11 @@ public class Promocion extends Entidad {
     @Column
     private Boolean activo = true;
 
-    @OneToMany(mappedBy = "promocion")
+    @OneToMany(
+            mappedBy = "promocion",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     private List<PromocionProducto> productos;
 
 }

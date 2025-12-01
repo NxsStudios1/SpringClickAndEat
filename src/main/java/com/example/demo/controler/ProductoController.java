@@ -6,6 +6,8 @@ import com.example.demo.model.inventario.Producto;
 import com.example.demo.service.CategoriaProductoService;
 import com.example.demo.service.ProductoService;
 import lombok.AllArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,7 +37,9 @@ public class ProductoController {
                         .descripcion(p.getDescripcion())
                         .precio(p.getPrecio() != null ? p.getPrecio() : 0.0)
                         .disponible(p.getDisponible() != null ? p.getDisponible() : true)
-                        .idCategoria(p.getCategoria() != null && p.getCategoria().getId() != null ? p.getCategoria().getId() : 0)
+                        .idCategoria(p.getCategoria() != null && p.getCategoria().getId() != null
+                                ? p.getCategoria().getId()
+                                : 0)
                         .build()
                 )
                 .collect(Collectors.toList());
@@ -57,7 +61,9 @@ public class ProductoController {
                 .descripcion(p.getDescripcion())
                 .precio(p.getPrecio() != null ? p.getPrecio() : 0.0)
                 .disponible(p.getDisponible() != null ? p.getDisponible() : true)
-                .idCategoria(p.getCategoria() != null && p.getCategoria().getId() != null ? p.getCategoria().getId() : 0)
+                .idCategoria(p.getCategoria() != null && p.getCategoria().getId() != null
+                        ? p.getCategoria().getId()
+                        : 0)
                 .build();
 
         return ResponseEntity.ok(dto);
@@ -67,7 +73,10 @@ public class ProductoController {
     @PostMapping("/producto")
     public ResponseEntity<ProductoDto> save(@RequestBody ProductoDto dtoEntrada) {
 
-        CategoriaProducto categoria = dtoEntrada.getIdCategoria() != 0 ? categoriaProductoService.getById(dtoEntrada.getIdCategoria()) : null;
+        CategoriaProducto categoria =
+                dtoEntrada.getIdCategoria() != 0
+                        ? categoriaProductoService.getById(dtoEntrada.getIdCategoria())
+                        : null;
 
         Producto producto = new Producto();
         producto.setNombre(dtoEntrada.getNombre());
@@ -84,24 +93,39 @@ public class ProductoController {
                 .descripcion(producto.getDescripcion())
                 .precio(producto.getPrecio() != null ? producto.getPrecio() : 0.0)
                 .disponible(producto.getDisponible() != null ? producto.getDisponible() : true)
-                .idCategoria(producto.getCategoria() != null && producto.getCategoria().getId() != null ? producto.getCategoria().getId() : 0)
+                .idCategoria(producto.getCategoria() != null && producto.getCategoria().getId() != null
+                        ? producto.getCategoria().getId()
+                        : 0)
                 .build();
 
         return ResponseEntity.ok(dto);
     }
 
-    // DELETE: eliminar producto
+    // DELETE: eliminar producto (manejando conflicto)
     @DeleteMapping("/producto/{id}")
-    public ResponseEntity<Void> delete(@PathVariable int id) {
-        productoService.delete(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<?> delete(@PathVariable int id) {
+        try {
+            productoService.delete(id);
+            return ResponseEntity.noContent().build();
+        } catch (IllegalStateException e) {
+            // Nuestro mensaje del service (promos o ingredientes)
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        } catch (DataIntegrityViolationException e) {
+            // Por si se escapa alguna restricción de BD
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("No se puede eliminar el producto porque está relacionado con otros registros.");
+        }
     }
 
     // PUT: actualizar producto
     @PutMapping("/producto/{id}")
-    public ResponseEntity<ProductoDto> update(@PathVariable int id, @RequestBody ProductoDto dtoEntrada) {
+    public ResponseEntity<ProductoDto> update(@PathVariable int id,
+                                              @RequestBody ProductoDto dtoEntrada) {
 
-        CategoriaProducto categoria = dtoEntrada.getIdCategoria() != 0 ? categoriaProductoService.getById(dtoEntrada.getIdCategoria()) : null;
+        CategoriaProducto categoria =
+                dtoEntrada.getIdCategoria() != 0
+                        ? categoriaProductoService.getById(dtoEntrada.getIdCategoria())
+                        : null;
 
         Producto cambios = new Producto();
         cambios.setNombre(dtoEntrada.getNombre());
@@ -121,7 +145,9 @@ public class ProductoController {
                 .descripcion(actualizado.getDescripcion())
                 .precio(actualizado.getPrecio() != null ? actualizado.getPrecio() : 0.0)
                 .disponible(actualizado.getDisponible() != null ? actualizado.getDisponible() : true)
-                .idCategoria(actualizado.getCategoria() != null && actualizado.getCategoria().getId() != null ? actualizado.getCategoria().getId() : 0)
+                .idCategoria(actualizado.getCategoria() != null && actualizado.getCategoria().getId() != null
+                        ? actualizado.getCategoria().getId()
+                        : 0)
                 .build();
 
         return ResponseEntity.ok(dto);

@@ -18,116 +18,112 @@ public class IngredienteController {
 
     private final IngredienteService ingredienteService;
 
-    // GET: todos los ingredientes
+    // ===================== GET TODOS =====================
     @GetMapping("/ingrediente")
     public ResponseEntity<List<IngredienteDto>> lista() {
         List<Ingrediente> ingredientes = ingredienteService.getAll();
+
         if (ingredientes == null || ingredientes.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
         List<IngredienteDto> dtos = ingredientes.stream()
-                .map(ingrediente -> IngredienteDto.builder()
-                        .id(ingrediente.getId() != null ? ingrediente.getId() : 0)
-                        .nombre(ingrediente.getNombre())
-                        .descripcion(ingrediente.getDescripcion())
-                        .cantidadPorcion(ingrediente.getCantidadPorcion() != null ? ingrediente.getCantidadPorcion() : 0.0)
-                        .unidadMedida(ingrediente.getUnidadMedida() != null ? ingrediente.getUnidadMedida().getIdUnidad() : 0)
-                        .stockActual(ingrediente.getStockActual() != null ? ingrediente.getStockActual() : 0.0)
-                        .precioUnitario(ingrediente.getPrecioUnitario() != null ? ingrediente.getPrecioUnitario() : 0.0)
-                        .build()
-                )
+                .map(this::toDto)
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(dtos);
     }
 
-    // GET: ingrediente por id
+    // ===================== GET POR ID =====================
     @GetMapping("/ingrediente/{id}")
     public ResponseEntity<IngredienteDto> getById(@PathVariable Integer id) {
-        Ingrediente ingrediente = ingredienteService.getById(id);
-        if (ingrediente == null) {
+        Ingrediente ing = ingredienteService.getById(id);
+        if (ing == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(toDto(ing));
+    }
+
+    // ===================== POST =====================
+    @PostMapping("/ingrediente")
+    public ResponseEntity<IngredienteDto> save(@RequestBody IngredienteDto dtoEntrada) {
+        // Validación básica
+        if (dtoEntrada.getNombre() == null || dtoEntrada.getNombre().isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
+        if (dtoEntrada.getUnidadMedida() == null || dtoEntrada.getUnidadMedida().isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        Ingrediente entidad = fromDto(dtoEntrada);
+        entidad = ingredienteService.save(entidad);
+
+        return ResponseEntity.ok(toDto(entidad));
+    }
+
+    // ===================== PUT =====================
+    @PutMapping("/ingrediente/{id}")
+    public ResponseEntity<IngredienteDto> update(@PathVariable Integer id,
+                                                 @RequestBody IngredienteDto dtoEntrada) {
+
+        Ingrediente existente = ingredienteService.getById(id);
+        if (existente == null) {
             return ResponseEntity.notFound().build();
         }
 
-        IngredienteDto dto = IngredienteDto.builder()
-                .id(ingrediente.getId() != null ? ingrediente.getId() : 0)
-                .nombre(ingrediente.getNombre())
-                .descripcion(ingrediente.getDescripcion())
-                .cantidadPorcion(ingrediente.getCantidadPorcion() != null ? ingrediente.getCantidadPorcion() : 0.0)
-                .unidadMedida(ingrediente.getUnidadMedida() != null ? ingrediente.getUnidadMedida().getIdUnidad() : 0)
-                .stockActual(ingrediente.getStockActual() != null ? ingrediente.getStockActual() : 0.0)
-                .precioUnitario(ingrediente.getPrecioUnitario() != null ? ingrediente.getPrecioUnitario() : 0.0)
-                .build();
+        // Copiamos cambios
+        existente.setNombre(dtoEntrada.getNombre());
+        existente.setDescripcion(dtoEntrada.getDescripcion());
+        existente.setCantidadPorcion(dtoEntrada.getCantidadPorcion());
 
-        return ResponseEntity.ok(dto);
+        if (dtoEntrada.getUnidadMedida() != null) {
+            UnidadMedidaEnum unidad =
+                    UnidadMedidaEnum.valueOf(dtoEntrada.getUnidadMedida());
+            existente.setUnidadMedida(unidad);
+        }
+
+        existente.setStockActual(dtoEntrada.getStockActual());
+        existente.setPrecioUnitario(dtoEntrada.getPrecioUnitario());
+
+        Ingrediente actualizado = ingredienteService.update(id, existente);
+
+        return ResponseEntity.ok(toDto(actualizado));
     }
 
-    // POST: crear ingrediente
-    @PostMapping("/ingrediente")
-    public ResponseEntity<IngredienteDto> save(@RequestBody IngredienteDto dtoEntrada) {
-
-        UnidadMedidaEnum unidad = UnidadMedidaEnum.getById(dtoEntrada.getUnidadMedida());
-
-        Ingrediente ingrediente = new Ingrediente();
-        ingrediente.setNombre(dtoEntrada.getNombre());
-        ingrediente.setDescripcion(dtoEntrada.getDescripcion());
-        ingrediente.setCantidadPorcion(dtoEntrada.getCantidadPorcion());
-        ingrediente.setUnidadMedida(unidad);
-        ingrediente.setStockActual(dtoEntrada.getStockActual());
-        ingrediente.setPrecioUnitario(dtoEntrada.getPrecioUnitario());
-
-        ingrediente = ingredienteService.save(ingrediente);
-
-        IngredienteDto dto = IngredienteDto.builder()
-                .id(ingrediente.getId() != null ? ingrediente.getId() : 0)
-                .nombre(ingrediente.getNombre())
-                .descripcion(ingrediente.getDescripcion())
-                .cantidadPorcion(ingrediente.getCantidadPorcion() != null ? ingrediente.getCantidadPorcion() : 0.0)
-                .unidadMedida(ingrediente.getUnidadMedida() != null ? ingrediente.getUnidadMedida().getIdUnidad() : 0)
-                .stockActual(ingrediente.getStockActual() != null ? ingrediente.getStockActual() : 0.0)
-                .precioUnitario(ingrediente.getPrecioUnitario() != null ? ingrediente.getPrecioUnitario() : 0.0)
-                .build();
-
-        return ResponseEntity.ok(dto);
-    }
-
-    // DELETE: eliminar ingrediente
+    // ===================== DELETE =====================
     @DeleteMapping("/ingrediente/{id}")
     public ResponseEntity<Void> delete(@PathVariable Integer id) {
         ingredienteService.delete(id);
         return ResponseEntity.noContent().build();
     }
 
-    // PUT: actualizar ingrediente
-    @PutMapping("/ingrediente/{id}")
-    public ResponseEntity<IngredienteDto> update(@PathVariable Integer id, @RequestBody IngredienteDto dtoEntrada) {
+    // ===================== MAPEOS DTO <-> ENTIDAD =====================
 
-        UnidadMedidaEnum unidad = UnidadMedidaEnum.getById(dtoEntrada.getUnidadMedida());
-
-        Ingrediente cambios = new Ingrediente();
-        cambios.setNombre(dtoEntrada.getNombre());
-        cambios.setDescripcion(dtoEntrada.getDescripcion());
-        cambios.setCantidadPorcion(dtoEntrada.getCantidadPorcion());
-        cambios.setUnidadMedida(unidad);
-        cambios.setStockActual(dtoEntrada.getStockActual());
-        cambios.setPrecioUnitario(dtoEntrada.getPrecioUnitario());
-
-        Ingrediente actualizado = ingredienteService.update(id, cambios);
-        if (actualizado == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        IngredienteDto dto = IngredienteDto.builder()
-                .id(actualizado.getId() != null ? actualizado.getId() : 0)
-                .nombre(actualizado.getNombre())
-                .descripcion(actualizado.getDescripcion())
-                .cantidadPorcion(actualizado.getCantidadPorcion() != null ? actualizado.getCantidadPorcion() : 0.0)
-                .unidadMedida(actualizado.getUnidadMedida() != null ? actualizado.getUnidadMedida().getIdUnidad() : 0)
-                .stockActual(actualizado.getStockActual() != null ? actualizado.getStockActual() : 0.0)
-                .precioUnitario(actualizado.getPrecioUnitario() != null ? actualizado.getPrecioUnitario() : 0.0)
+    private IngredienteDto toDto(Ingrediente ing) {
+        return IngredienteDto.builder()
+                .id(ing.getId() != null ? ing.getId() : 0)
+                .nombre(ing.getNombre())
+                .descripcion(ing.getDescripcion())
+                .cantidadPorcion(ing.getCantidadPorcion() != null ? ing.getCantidadPorcion() : 0.0)
+                .unidadMedida(
+                        ing.getUnidadMedida() != null ? ing.getUnidadMedida().name() : null
+                )
+                .stockActual(ing.getStockActual() != null ? ing.getStockActual() : 0.0)
+                .precioUnitario(ing.getPrecioUnitario() != null ? ing.getPrecioUnitario() : 0.0)
                 .build();
+    }
 
-        return ResponseEntity.ok(dto);
+    private Ingrediente fromDto(IngredienteDto dto) {
+        UnidadMedidaEnum unidad =
+                UnidadMedidaEnum.valueOf(dto.getUnidadMedida());
+
+        return Ingrediente.builder()
+                .nombre(dto.getNombre())
+                .descripcion(dto.getDescripcion())
+                .cantidadPorcion(dto.getCantidadPorcion())
+                .unidadMedida(unidad)
+                .stockActual(dto.getStockActual())
+                .precioUnitario(dto.getPrecioUnitario())
+                .build();
     }
 }

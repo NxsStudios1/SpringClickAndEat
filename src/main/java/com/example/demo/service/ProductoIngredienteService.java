@@ -15,4 +15,7 @@ public interface ProductoIngredienteService {
     void delete(Integer id);
 
     ProductoIngrediente update(Integer id, ProductoIngrediente productoIngrediente);
+
+
+    List<ProductoIngrediente> findByProducto(Integer idProducto);
 }

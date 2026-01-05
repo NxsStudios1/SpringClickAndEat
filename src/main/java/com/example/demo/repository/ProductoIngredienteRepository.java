@@ -11,4 +11,5 @@ public interface ProductoIngredienteRepository
     List<ProductoIngrediente> findByProducto_Id(Integer idProducto);
 
     long countByProductoId(Integer idProducto);
+
 }

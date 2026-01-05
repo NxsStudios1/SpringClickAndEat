@@ -50,7 +50,7 @@ public class ProductoIngredienteController {
         return ResponseEntity.ok(toDto(pi));
     }
 
-    // NUEVO: GET por idProducto (todos los ingredientes de un producto)
+    // GET: por idProducto
     @GetMapping("/productoIngrediente/producto/{idProducto}")
     public ResponseEntity<List<ProductoIngredienteDto>> getByProducto(
             @PathVariable Integer idProducto) {
@@ -69,7 +69,6 @@ public class ProductoIngredienteController {
         return ResponseEntity.ok(dtos);
     }
 
-    // =================== POST / PUT / DELETE ===================
 
     // POST: crear relación producto-ingrediente
     @PostMapping("/productoIngrediente")

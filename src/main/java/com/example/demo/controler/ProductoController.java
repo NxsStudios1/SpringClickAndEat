@@ -101,7 +101,7 @@ public class ProductoController {
         return ResponseEntity.ok(dto);
     }
 
-    // DELETE: eliminar producto (manejando conflicto)
+    // DELETE: eliminar producto
     @DeleteMapping("/producto/{id}")
     public ResponseEntity<?> delete(@PathVariable int id) {
         try {

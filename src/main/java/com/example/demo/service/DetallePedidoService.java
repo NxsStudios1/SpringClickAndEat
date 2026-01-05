@@ -15,4 +15,6 @@ public interface DetallePedidoService {
     void delete(Integer id);
 
     DetallePedido update(Integer id, DetallePedido detallePedido);
+
+    List<DetallePedido> findByPedidoId ( Integer idPedido);
 }

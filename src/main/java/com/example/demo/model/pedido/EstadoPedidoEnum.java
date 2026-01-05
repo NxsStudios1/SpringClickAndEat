@@ -1,6 +1,6 @@
 package com.example.demo.model.pedido;
 
-public enum EstadoPedidoEnum {
+public enum     EstadoPedidoEnum {
 
     PENDIENTE(1),
     EN_PROCESO(2),

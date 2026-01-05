@@ -49,4 +49,9 @@ public class DetallePedidoServiceImpl implements DetallePedidoService {
         actual.setPedido(detallePedido.getPedido());
         return detallePedidoRepository.save(actual);
     }
+
+    @Override
+    public List<DetallePedido> findByPedidoId(Integer idPedido) {
+        return detallePedidoRepository.findByPedidoId(idPedido);
+    }
 }

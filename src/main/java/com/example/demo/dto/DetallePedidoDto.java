@@ -1,3 +1,4 @@
+// src/main/java/com/example/demo/dto/DetallePedidoDto.java
 package com.example.demo.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;

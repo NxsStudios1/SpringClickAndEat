@@ -71,7 +71,6 @@ public class IngredienteController {
             return ResponseEntity.notFound().build();
         }
 
-        // Copiamos cambios
         existente.setNombre(dtoEntrada.getNombre());
         existente.setDescripcion(dtoEntrada.getDescripcion());
         existente.setCantidadPorcion(dtoEntrada.getCantidadPorcion());

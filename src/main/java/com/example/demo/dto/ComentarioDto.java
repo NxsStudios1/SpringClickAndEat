@@ -18,7 +18,6 @@ public class ComentarioDto {
     private String contenido;
     private int calificacion;
 
-    // ahora como STRING (COMIDA, SERVICIO, etc.)
     private String categoria;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)

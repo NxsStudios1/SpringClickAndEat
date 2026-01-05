@@ -36,7 +36,6 @@ public class ComentarioController {
             return ResponseEntity.notFound().build();
         }
 
-        // filtrado opcional por asunto
         if (asunto != null && !asunto.isEmpty()) {
             comentarios = comentarios.stream()
                     .filter(c -> c.getAsunto() != null &&
@@ -75,7 +74,6 @@ public class ComentarioController {
             try {
                 categoria = CategoriaComentarioEnum.valueOf(dtoEntrada.getCategoria());
             } catch (IllegalArgumentException ex) {
-                // categoría inválida, se deja null o puedes manejar error
             }
         }
 
@@ -107,7 +105,6 @@ public class ComentarioController {
             try {
                 categoria = CategoriaComentarioEnum.valueOf(dtoEntrada.getCategoria());
             } catch (IllegalArgumentException ex) {
-                // categoría inválida, deja valor anterior o maneja error
             }
         }
 
@@ -159,7 +156,6 @@ public class ComentarioController {
                                             ? r.getAdministrador().getId()
                                             : 0
                             )
-                            // 👇 ESTE ES EL CAMBIO IMPORTANTE
                             .nombreAdministrador(
                                     r.getAdministrador() != null
                                             ? r.getAdministrador().getNombre()

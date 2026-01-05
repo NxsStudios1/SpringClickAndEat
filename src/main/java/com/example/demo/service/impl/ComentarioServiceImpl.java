@@ -1,24 +1,22 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.model.comentario.Comentario;
-import com.example.demo.model.sesion.Rol;
 import com.example.demo.repository.ComentarioRepository;
-import com.example.demo.repository.RolRepository;
 import com.example.demo.service.ComentarioService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@AllArgsConstructor
 @Service
+@RequiredArgsConstructor
 public class ComentarioServiceImpl implements ComentarioService {
 
     private final ComentarioRepository comentarioRepository;
 
     @Override
     public List<Comentario> getAll() {
-        return comentarioRepository.findAll();
+        return comentarioRepository.obtenerComentariosOrdenados();
     }
 
     @Override
@@ -39,14 +37,14 @@ public class ComentarioServiceImpl implements ComentarioService {
     @Override
     public Comentario update(Integer id, Comentario comentario) {
         Comentario actual = comentarioRepository.findById(id).orElse(null);
-        if (actual == null) {
-            return null;
-        }
+        if (actual == null) return null;
+
         actual.setAsunto(comentario.getAsunto());
         actual.setContenido(comentario.getContenido());
         actual.setCalificacion(comentario.getCalificacion());
         actual.setCategoria(comentario.getCategoria());
         actual.setCliente(comentario.getCliente());
+
         return comentarioRepository.save(actual);
     }
 }

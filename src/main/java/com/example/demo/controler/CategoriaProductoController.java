@@ -52,7 +52,7 @@ public class CategoriaProductoController {
         return ResponseEntity.ok(dto);
     }
 
-    // POST: crear categoría
+    // POST:rear categoría
     @PostMapping("/categoriaProducto")
     public ResponseEntity<CategoriaProductoDto> save(@RequestBody CategoriaProductoDto dtoEntrada) {
 

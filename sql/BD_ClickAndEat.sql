@@ -5,7 +5,7 @@
 #DROP DATABASE CLICKANDEAT;
 CREATE DATABASE clickandeat;
 USE clickandeat;
-SHOW TABLES;
+SHOW TABLES		;
 
 # ----------------------------
 # CREACIÓN DE TABLAS

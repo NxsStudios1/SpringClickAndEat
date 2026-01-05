@@ -45,4 +45,10 @@ public class PromocionProductoServiceImpl implements PromocionProductoService {
         actual.setPromocion(promocionProducto.getPromocion());
         return promocionProductoRepository.save(actual);
     }
+
+
+    @Override
+    public List<PromocionProducto> findByPromocion(Integer idPromocion) {
+        return promocionProductoRepository.findByPromocion_Id(idPromocion);
+    }
 }

@@ -15,4 +15,7 @@ public interface PromocionProductoService {
     void delete(Integer id);
 
     PromocionProducto update(Integer id, PromocionProducto promocionProducto);
+
+    List<PromocionProducto> findByPromocion(Integer idPromocion);
+
 }
